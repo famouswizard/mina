@@ -52,7 +52,7 @@ def download_type_shapes(role,branch,sha1) :
     print (f"1. git checkout {sha1}")
     print ("2. nix develop mina")
     print (f"3. dune exec src/app/cli/src/mina.exe internal dump-type-shape > {sha1}-type_shape.txt")
-    print ("4. gsutil cp gs://mina-type-shapes {sha1}-type_shape.txt ")
+    print ("4. gsutil cp {sha1}-type_shape.txt gs://mina-type-shapes")
 
     sys.exit(1)
   
