@@ -48,11 +48,11 @@ def download_type_shapes(role,branch,sha1) :
   r = requests.head(url, allow_redirects=True)
   if r.status_code != 200:
     print ("cannot fetch file reference from non-existing path: ${url}")
-    print ("looks like you need to generate it. Please use below steps")
-    print (f"git checkout ${sha1}")
-    print ("nix develop mina")
-    print (f"dune exec src/app/cli/src/mina.exe internal dump-type-shape > ${sha1}-type_shape.txt")
-    print ("gsutil cp gs://mina-type-shapes ${sha1}-type_shape.txt ")
+    print ("looks like you need to generate it. Please use below steps: ")
+    print (f"1. git checkout {sha1}")
+    print ("2. nix develop mina")
+    print (f"3. dune exec src/app/cli/src/mina.exe internal dump-type-shape > {sha1}-type_shape.txt")
+    print ("4. gsutil cp gs://mina-type-shapes {sha1}-type_shape.txt ")
 
     sys.exit(1)
   
