@@ -510,15 +510,16 @@ class HeapUsageBenchmark(Benchmark):
     def parse(self, content, output_filename, influxdb, branch):
         buf = io.StringIO(content)
         lines = buf.readlines()
-        rows = self.headers_to_name(self.headers())
+        rows = []
+        rows.append(self.headers_to_name(self.headers()))
 
         for i, line in enumerate(lines):
             if line.startswith("Data of type"):
                 sanitized_line = line.replace(" ", "").strip()
                 row = list(
-                    parse("Dataoftype{}uses{}heapwords={}bytes",
+                    parse.parse("Dataoftype{}uses{}heapwords={}bytes",
                           sanitized_line))
-                row.append(("heap_usage", branch))
+                row.extend(("heap_usage", branch))
                 rows.append(row)
 
         with open(output_filename, 'w') as csvfile:
