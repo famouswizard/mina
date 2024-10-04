@@ -10,6 +10,7 @@
 """
 
 import argparse
+from pathlib import Path
 
 from lib import *
 
@@ -32,6 +33,7 @@ parse_bench.add_argument("--branch", help="adds additional colum in csv with bra
 parse_bench.add_argument("--outfile", help="output file")
 
 compare_bench = subparsers.add_parser('compare', help="compare current data with historical downloaded from influx db")
+compare_bench.add_argument("--benchmark", type= BenchmarkType, help="benchmark to run")
 compare_bench.add_argument("--infile", help="input file")
 compare_bench.add_argument("--yellow-threshold",help="defines how many percent current measurement can exceed average so app will trigger warning",
                            type=float,
@@ -112,7 +114,9 @@ if args.cmd == "run":
         print(f"produced files: {files}")
 
 if args.cmd == "parse":
-    bench.parse(file.read(), args.outfile, args.influx, args.branch)
+    files = bench.parse(Path(args.infile).read_text(), args.outfile, args.influx, args.branch)
+    print(f'Parsed files: \n{",".join(files)}')
+
 
 if args.cmd == "compare":
     bench.compare(args.infile, args.yellow_threshold, args.red_threshold)

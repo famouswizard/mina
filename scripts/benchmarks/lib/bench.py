@@ -379,10 +379,12 @@ class SnarkBenchmark(Benchmark):
 
     name = MeasurementColumn("name", 0)
     proofs_updates = FieldColumn("proofs updates", 1, "")
-    nonproofs = FieldColumn("nonproofs", 2, "")
-    value = FieldColumn("value", 3, "")
-    category = TagColumn("category", 4)
-    branch = TagColumn("gitbranch", 5)
+    nonproofs_pairs = FieldColumn("non-proof pairs", 2, "")
+    nonproofs_singles = FieldColumn("non-proof singles", 3, "")
+    verification_time = FieldColumn("verification time", 4, "[s]")
+    proving_time = FieldColumn("value", 5, "[s]")
+    category = TagColumn("category", 6)
+    branch = TagColumn("gitbranch", 7)
 
     k = 1
     max_num_updates = 4
@@ -400,69 +402,54 @@ class SnarkBenchmark(Benchmark):
     def headers(self):
         return [
             SnarkBenchmark.name, SnarkBenchmark.proofs_updates,
-            SnarkBenchmark.nonproofs, SnarkBenchmark.value,
+            SnarkBenchmark.nonproofs_pairs, SnarkBenchmark.nonproofs_singles,
+            SnarkBenchmark.verification_time, SnarkBenchmark.proving_time,
             SnarkBenchmark.category, SnarkBenchmark.branch
         ]
 
     def fields(self):
         return [
-            SnarkBenchmark.proofs_updates, SnarkBenchmark.nonproofs,
-            SnarkBenchmark.value
+            SnarkBenchmark.proofs_updates, SnarkBenchmark.nonproofs_pairs,
+            SnarkBenchmark.nonproofs_singles, SnarkBenchmark.verification_time, SnarkBenchmark.proving_time
         ]
 
     def parse(self, content, output_filename, influxdb, branch):
         buf = io.StringIO(content)
         lines = buf.readlines()
-        stats = []
-        zkapps = []
-
-        stats.append(list(map(lambda x: x.name, self.headers())))
+        rows = []
+        category = "snark"
+        rows.append(list(map(lambda x: x.name, self.headers())))
 
         for line in lines:
-            if line == '':
-                continue
-
-            syntax = 'Generated zkapp transactions with (?P<updates>\d+) updates and (?P<proof>\d+) proof updates in (?P<time>[0-9]*[.]?[0-9]+) secs'
-
-            match = re.match(syntax, line)
-
-            if match:
-                updates = int(match.group('updates'))
-                proof = int(match.group('proof'))
-                time = float(match.group('time'))
-                name = f"{updates} Updates {proof} Proofs"
-                tag = "generated zkapp transactions"
-
-                stats.append((name, updates, proof, time, tag, branch))
-
             if line.startswith("|"):
                 if "--" in line:
+                    continue
+                elif line.startswith("| No.|"):
                     continue
                 else:
                     cols = line.split("|")
                     cols = list(map(lambda x: x.strip(), cols))
                     cols = list(filter(lambda x: x, cols))
-                    zkapps.append(cols[1:])
-                    zkapps.append(branch)
 
-        with open(f"{Path(output_filename).stem}_stats.csv", 'w') as csvfile:
+                    #| No.| Proof updates| Non-proof pairs| Non-proof singles| Mempool verification time (sec)| Transaction proving time (sec)|Permutation|
+                    proof_update = cols[1]
+                    non_proof_pairs = cols[2]
+                    non_proof_singles = cols[3]
+                    verification_time = cols[4]
+                    proving_time = cols[5]
+                    name = cols[6]
+
+                    rows.append((name,proof_update,non_proof_pairs,non_proof_singles,verification_time,proving_time,
+                                   category,branch))
+
+        with open(output_filename, 'w') as csvfile:
             if influxdb:
                 csvfile.write(self.headers_to_influx(self.headers()) + "\n")
 
             csvwriter = csv.writer(csvfile)
-            csvwriter.writerows(stats)
+            csvwriter.writerows(rows)
 
-        with open(f"{Path(output_filename).stem}_zkapp.csv", 'w') as csvfile:
-            if influxdb:
-                csvfile.write(self.headers_to_influx(self.headers()) + "\n")
-
-            csvwriter = csv.writer(csvfile)
-            csvwriter.writerows(zkapps)
-
-        return [
-            f"{Path(output_filename).stem}_stats.csv",
-            f"{Path(output_filename).stem}_zkapp.csv"
-        ]
+        return [ output_filename ]
 
     def default_path(self):
         return "mina"
