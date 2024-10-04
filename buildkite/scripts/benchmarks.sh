@@ -19,7 +19,7 @@ source buildkite/scripts/debian/install.sh "mina-berkeley,mina-test-suite" 1
 pip install parse
 pip install -r ./scripts/benchmarks/requirements.txt
 
-MAINLINE_BRANCHES="-m develop -m compatile -m master"
+MAINLINE_BRANCHES="-m develop -m compatile -m master -m dkijania/build_performance_tooling_in_ci"
 EXTRA_ARGS="--genesis-ledger-path ./genesis_ledgers/devnet.json"
 
 while [[ "$#" -gt 0 ]]; do case $1 in
