@@ -105,9 +105,7 @@ class Benchmark(abc.ABC):
                             )
 
     def upload(self, file):
-        self.influx_client.upload_csv(file,
-                                      self.name_header().name,
-                                      self.branch_header().name)
+        self.influx_client.upload_csv(file)
 
 
 class BenchmarkType(Enum):
