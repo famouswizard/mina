@@ -14,7 +14,7 @@ source buildkite/scripts/export-git-env-vars.sh
 
 source buildkite/scripts/debian/install.sh "mina-test-suite,mina-berkeley-instrumented" 1
 
-./script/tests/ledger_test_apply.sh \
+./scripts/tests/ledger_test_apply.sh \
     --mina-app mina \
     --generate-ledger-app mina-generate-random-ledger \
     --runtime-ledger-app mina-create-genesis
