@@ -19,7 +19,7 @@ fi
 sudo chown -R opam ~/.gnupg/
 
 set +x
-echo ${GPG_PASSPHRASE} | gpg --batch --yes --passphrase-fd 0 --import /var/secrets/debian/key.gpg
+gpg --batch --yes --passphrase-fd 0 --import /var/secrets/debian/key.gpg
 set -x
 
 source scripts/debian/publish.sh \
@@ -28,5 +28,4 @@ source scripts/debian/publish.sh \
   --version $MINA_DEB_VERSION \
   --codename $MINA_DEB_CODENAME \
   --bucket $BUCKET \
-  --sign $SIGN \
-  --passphrase $GPG_PASSPHRASE
+  --sign $SIGN

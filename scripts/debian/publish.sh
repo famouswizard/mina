@@ -14,7 +14,6 @@ while [[ "$#" -gt 0 ]]; do case $1 in
   -c|--codename) DEB_CODENAME="$2"; shift;;
   -b|--bucket) BUCKET="$2"; shift;;
   -s|--sign) SIGN="$2"; shift;;
-  -p|--passphrase) PASSPHRASE="$2"; shift;;
   *) echo "Unknown parameter passed: $1"; exit 1;;
 esac; shift; done
 
@@ -29,7 +28,6 @@ function usage() {
   echo "  -v, --version       The Debian version"
   echo "  -c, --codename      The Debian codename"
   echo "  -s, --sign          The Debian key id used for sign"
-  echo "  -p, --passphrase    The Debian key passphrase (optional)"
   echo ""
   echo "Example: $0 --name mina-archive --release unstable --version 2.0.0berkeley-rc1-berkeley-48efea4 --codename bullseye "
   exit 1
@@ -66,7 +64,7 @@ DEBS3_UPLOAD="deb-s3 upload $BUCKET_ARG $S3_REGION_ARG \
 if [[ -z "${PASSPHRASE:-}" ]]; then
   GPG_OPTS=""
 else
-  GPG_OPTS="--gpg-options=\"--batch --pinentry-mode=loopback --yes --passphrase ${PASSPHRASE}\""
+  GPG_OPTS="--gpg-options=\"--batch --pinentry-mode=loopback --yes "
 fi
 
 
