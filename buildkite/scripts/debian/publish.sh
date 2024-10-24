@@ -19,7 +19,7 @@ fi
 sudo chown -R opam ~/.gnupg/
 
 set +x
-gpg --batch --yes --passphrase-fd 0 --import /var/secrets/debian/key.gpg
+gpg --batch --yes --import /var/secrets/debian/key.gpg
 set -x
 
 source scripts/debian/publish.sh \
