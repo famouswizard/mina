@@ -48,7 +48,8 @@ let main ~config ~output ~no_num_accounts () =
   let%bind () = Unix.mkdir ~p:() output in
   let ledger = Genesis_ledger.create test_config.genesis_ledger in
   let%bind () = Genesis_ledger.write_keys_to ledger output in
-  Genesis_ledger.write_ledger ~no_num_accounts ledger output ;
+  Genesis_ledger.write_ledger ~no_num_accounts ledger output
+    ~add_genesis_winner:(Some false) ;
   Deferred.return ()
 
 let () =
